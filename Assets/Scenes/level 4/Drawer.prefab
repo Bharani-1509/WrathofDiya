@@ -1,0 +1,222 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5832757762960320735
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1743502690901572529}
+  m_Layer: 0
+  m_Name: Drawer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1743502690901572529
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5832757762960320735}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 31.727114, y: -0.09751898, z: -174.90297}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 706081104453888114}
+  - {fileID: 1730840984396403928}
+  - {fileID: 4771810413297330722}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &67989322255466718
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1743502690901572529}
+    m_Modifications:
+    - target: {fileID: 4812496030108379900, guid: 49c093e51c5ddb54398360fa55b786f9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812496030108379900, guid: 49c093e51c5ddb54398360fa55b786f9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812496030108379900, guid: 49c093e51c5ddb54398360fa55b786f9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812496030108379900, guid: 49c093e51c5ddb54398360fa55b786f9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.49974796
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812496030108379900, guid: 49c093e51c5ddb54398360fa55b786f9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.49974912
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812496030108379900, guid: 49c093e51c5ddb54398360fa55b786f9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.50025105
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812496030108379900, guid: 49c093e51c5ddb54398360fa55b786f9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.5002517
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812496030108379900, guid: 49c093e51c5ddb54398360fa55b786f9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812496030108379900, guid: 49c093e51c5ddb54398360fa55b786f9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812496030108379900, guid: 49c093e51c5ddb54398360fa55b786f9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 90.058
+      objectReference: {fileID: 0}
+    - target: {fileID: 5297001758519078982, guid: 49c093e51c5ddb54398360fa55b786f9, type: 3}
+      propertyPath: m_Name
+      value: Medieval_Drawer (2)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 49c093e51c5ddb54398360fa55b786f9, type: 3}
+--- !u!4 &4771810413297330722 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4812496030108379900, guid: 49c093e51c5ddb54398360fa55b786f9, type: 3}
+  m_PrefabInstance: {fileID: 67989322255466718}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &5918003408567881056
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1743502690901572529}
+    m_Modifications:
+    - target: {fileID: 5811799749054693288, guid: 1300c605b3fdb304999bfa155cca8cba, type: 3}
+      propertyPath: m_Name
+      value: Medieval_Drawer
+      objectReference: {fileID: 0}
+    - target: {fileID: 6623802986469238034, guid: 1300c605b3fdb304999bfa155cca8cba, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -39.877113
+      objectReference: {fileID: 0}
+    - target: {fileID: 6623802986469238034, guid: 1300c605b3fdb304999bfa155cca8cba, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.03751898
+      objectReference: {fileID: 0}
+    - target: {fileID: 6623802986469238034, guid: 1300c605b3fdb304999bfa155cca8cba, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.022964478
+      objectReference: {fileID: 0}
+    - target: {fileID: 6623802986469238034, guid: 1300c605b3fdb304999bfa155cca8cba, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6623802986469238034, guid: 1300c605b3fdb304999bfa155cca8cba, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6623802986469238034, guid: 1300c605b3fdb304999bfa155cca8cba, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6623802986469238034, guid: 1300c605b3fdb304999bfa155cca8cba, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6623802986469238034, guid: 1300c605b3fdb304999bfa155cca8cba, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 6623802986469238034, guid: 1300c605b3fdb304999bfa155cca8cba, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 6623802986469238034, guid: 1300c605b3fdb304999bfa155cca8cba, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1300c605b3fdb304999bfa155cca8cba, type: 3}
+--- !u!4 &706081104453888114 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6623802986469238034, guid: 1300c605b3fdb304999bfa155cca8cba, type: 3}
+  m_PrefabInstance: {fileID: 5918003408567881056}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &6766609242712534243
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1743502690901572529}
+    m_Modifications:
+    - target: {fileID: 5035866562605873211, guid: 2da2be2d99f6ea5478cf08bb6edfa93b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 8.142885
+      objectReference: {fileID: 0}
+    - target: {fileID: 5035866562605873211, guid: 2da2be2d99f6ea5478cf08bb6edfa93b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.03751898
+      objectReference: {fileID: 0}
+    - target: {fileID: 5035866562605873211, guid: 2da2be2d99f6ea5478cf08bb6edfa93b, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 36.29297
+      objectReference: {fileID: 0}
+    - target: {fileID: 5035866562605873211, guid: 2da2be2d99f6ea5478cf08bb6edfa93b, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5035866562605873211, guid: 2da2be2d99f6ea5478cf08bb6edfa93b, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5035866562605873211, guid: 2da2be2d99f6ea5478cf08bb6edfa93b, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5035866562605873211, guid: 2da2be2d99f6ea5478cf08bb6edfa93b, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5035866562605873211, guid: 2da2be2d99f6ea5478cf08bb6edfa93b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 5035866562605873211, guid: 2da2be2d99f6ea5478cf08bb6edfa93b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 5035866562605873211, guid: 2da2be2d99f6ea5478cf08bb6edfa93b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5668111469432251009, guid: 2da2be2d99f6ea5478cf08bb6edfa93b, type: 3}
+      propertyPath: m_Name
+      value: Medieval_Drawer (1)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2da2be2d99f6ea5478cf08bb6edfa93b, type: 3}
+--- !u!4 &1730840984396403928 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5035866562605873211, guid: 2da2be2d99f6ea5478cf08bb6edfa93b, type: 3}
+  m_PrefabInstance: {fileID: 6766609242712534243}
+  m_PrefabAsset: {fileID: 0}
