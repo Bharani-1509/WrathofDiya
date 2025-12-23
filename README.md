@@ -1,2 +1,0 @@
-# WrathOfTheNight
-Final Year Project
