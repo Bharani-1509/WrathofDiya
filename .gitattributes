@@ -19,3 +19,7 @@
 *.unity filter=lfs diff=lfs merge=lfs -text
 *.prefab filter=lfs diff=lfs merge=lfs -text
 *.blend filter=lfs diff=lfs merge=lfs -text
+*.mp3
+[3~
+git[[:space:]]lfs[[:space:]]track[[:space:]]*.wav
+git[[:space:]]lfs[[:space:]]track[[:space:]]*.mp3 filter=lfs diff=lfs merge=lfs -text
