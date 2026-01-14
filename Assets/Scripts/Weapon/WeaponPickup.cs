@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class WeaponPickup : MonoBehaviour
 {
-    public string weaponName;   // "Gun", "Shotgun", "Knife"
+    public string weaponName; // Gun, Shotgun, Knife etc
 
     private void OnTriggerEnter(Collider other)
     {
@@ -11,21 +11,16 @@ public class WeaponPickup : MonoBehaviour
         Transform weaponHolder = other.transform
             .Find("MainCamera/WeaponRoot/CullingMask/WeaponHolder");
 
-        if (weaponHolder == null) return;
+        if (!weaponHolder) return;
 
         Transform weapon = weaponHolder.Find(weaponName);
+        if (!weapon) return;
 
-        if (weapon == null) return;
-
-        // If already owned
-        if (weapon.gameObject.activeSelf)
-            return;
+        WeaponSwitching ws = weaponHolder.GetComponent<WeaponSwitching>();
+        if (!ws) return;
 
         weapon.gameObject.SetActive(true);
-
-        // Auto-equip
-        WeaponSwitching ws = weaponHolder.GetComponent<WeaponSwitching>();
-        ws.selectedWeapon = weapon.GetSiblingIndex();
+        ws.AddWeapon(weapon.gameObject);
 
         Destroy(gameObject);
     }

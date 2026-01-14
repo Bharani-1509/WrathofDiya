@@ -1,55 +1,55 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class WeaponSwitching : MonoBehaviour
 {
-    public int selectedWeapon;
+    public List<GameObject> ownedWeapons = new List<GameObject>();
+    public int selectedWeapon = 0;
+
     void Start()
     {
-        
+        // Add all active weapons at start (Knife)
+        foreach (Transform weapon in transform)
+        {
+            if (weapon.gameObject.activeSelf)
+                ownedWeapons.Add(weapon.gameObject);
+            else
+                weapon.gameObject.SetActive(false);
+        }
+
+        SelectWeapon();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        int previousSelectedWeapon = selectedWeapon;
+        if (ownedWeapons.Count <= 1) return;
+
+        int previous = selectedWeapon;
 
         if (Input.GetAxis("Mouse ScrollWheel") > 0f)
-        {
-            if (selectedWeapon >= transform.childCount - 1)
-                selectedWeapon = 0;
-            else
-                selectedWeapon++;
-        }
+            selectedWeapon = (selectedWeapon + 1) % ownedWeapons.Count;
 
         if (Input.GetAxis("Mouse ScrollWheel") < 0f)
-        {
-            if (selectedWeapon <= 0)
-                selectedWeapon = transform.childCount - 1;
-            else
-                selectedWeapon--;
-        }
+            selectedWeapon = (selectedWeapon - 1 + ownedWeapons.Count) % ownedWeapons.Count;
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-            selectedWeapon = 0;
-
-        if (Input.GetKeyDown(KeyCode.Alpha2) && transform.childCount >= 2)
-            selectedWeapon = 1;
-
-        if (previousSelectedWeapon != selectedWeapon)
+        if (previous != selectedWeapon)
             SelectWeapon();
     }
 
     void SelectWeapon()
     {
-        int i=0;
-       
-        foreach (Transform weapon in transform)
+        for (int i = 0; i < ownedWeapons.Count; i++)
         {
-            if(i==selectedWeapon)
-            weapon.gameObject.SetActive(true);
-            else
-            weapon.gameObject.SetActive(false);
-             i++;
+            ownedWeapons[i].SetActive(i == selectedWeapon);
         }
+    }
+
+    public void AddWeapon(GameObject newWeapon)
+    {
+        if (ownedWeapons.Contains(newWeapon)) return;
+
+        ownedWeapons.Add(newWeapon);
+        selectedWeapon = ownedWeapons.Count - 1; // auto-equip new weapon
+        SelectWeapon();
     }
 }
