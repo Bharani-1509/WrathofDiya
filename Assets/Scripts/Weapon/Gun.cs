@@ -99,11 +99,11 @@ public class Gun : MonoBehaviour
         {
             Debug.Log(hit.transform.name);
             Debug.Log("Bullets used: " + bulletsUsed);
-            Enemy target = hit.transform.GetComponent<Enemy>();
+            Enemy target = hit.transform.GetComponentInParent<Enemy>();
 
             if (target != null)
             {
-                target.TakeDamage(damage);
+                target.TakeDamage((int)damage);
             }
             if (hit.rigidbody != null)
             {
