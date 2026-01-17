@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.AI;
 
 public class EnemyAI : MonoBehaviour
@@ -7,60 +7,66 @@ public class EnemyAI : MonoBehaviour
     public float sightRange = 8f;
     public float attackRange = 2f;
     public float attackCooldown = 1.5f;
+    public int attackDamage = 10;
 
-    NavMeshAgent agent;
-    Animator animator;
-    float nextAttackTime;
+    private NavMeshAgent agent;
+    private Animator animator;
+    private float nextAttackTime;
+    private bool playerSpotted = false;
 
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
-        animator = GetComponentInChildren<Animator>();
+        agent = GetComponentInParent<NavMeshAgent>();
+        animator = GetComponent<Animator>();
 
         if (player == null)
-        {
             player = GameObject.FindGameObjectWithTag("Player")?.transform;
-        }
     }
 
     void Update()
     {
-        if (player == null || agent == null || animator == null)
-            return;
+        if (!agent.enabled || player == null) return;
 
         float distance = Vector3.Distance(transform.position, player.position);
 
-        if (distance <= sightRange && distance > attackRange)
-        {
-            // CHASE
-            agent.isStopped = false;
-            agent.SetDestination(player.position);
+        // SEE PLAYER
+        if (distance <= sightRange)
+            playerSpotted = true;
 
-            animator.SetBool("IsChasing", true);
-            animator.SetBool("IsAttacking", false);
-            animator.SetFloat("Speed", agent.velocity.magnitude);
-        }
-        else if (distance <= attackRange)
+        if (playerSpotted)
         {
-            // ATTACK
-            Attack();
+            if (distance > attackRange)
+            {
+                ChasePlayer();
+            }
+            else
+            {
+                AttackPlayer();
+            }
         }
         else
         {
-            // IDLE
-            agent.isStopped = true;
-            animator.SetBool("IsChasing", false);
-            animator.SetBool("IsAttacking", false);
-            animator.SetFloat("Speed", 0f);
+            Idle();
         }
     }
 
-    void Attack()
+    void ChasePlayer()
+    {
+        agent.isStopped = false;
+        agent.SetDestination(player.position);
+
+        animator.SetBool("IsChasing", true);
+        animator.SetBool("IsAttacking", false);
+        animator.SetFloat("Speed", agent.velocity.magnitude);
+    }
+
+    void AttackPlayer()
     {
         agent.isStopped = true;
-        Vector3 direction = (player.position - transform.position).normalized;
-        direction.y = 0f; // prevent vertical rotation
 
+        // Rotate towards player
+        Vector3 direction = (player.position - transform.position).normalized;
+        direction.y = 0;
         if (direction != Vector3.zero)
         {
             Quaternion lookRotation = Quaternion.LookRotation(direction);
@@ -71,6 +77,36 @@ public class EnemyAI : MonoBehaviour
         {
             animator.SetBool("IsAttacking", true);
             nextAttackTime = Time.time + attackCooldown;
+            Invoke(nameof(ResetAttackBool), 0.1f);
+        }
+    }
+
+    void ResetAttackBool()
+    {
+        animator.SetBool("IsAttacking", false);
+    }
+
+    void Idle()
+    {
+        agent.isStopped = true;
+        animator.SetBool("IsChasing", false);
+        animator.SetBool("IsAttacking", false);
+        animator.SetFloat("Speed", 0f);
+    }
+
+    public void DealDamage()
+    {
+        if (player == null) return;
+
+        float distance = Vector3.Distance(transform.position, player.position);
+        if (distance <= attackRange)
+        {
+            PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(attackDamage);
+            }
+            Debug.Log("Enemy hit player!");
         }
     }
 }

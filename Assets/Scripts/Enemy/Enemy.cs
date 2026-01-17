@@ -20,6 +20,10 @@ public class Enemy : MonoBehaviour
         currentHealth -= damage;
         animator.SetTrigger("Hit");
 
+        Debug.Log($"[ENEMY HIT] {gameObject.name} | HP Left: {currentHealth}");
+
+        // Removed ResetAttackCooldown() call
+
         if (currentHealth <= 0)
         {
             Die();
@@ -32,6 +36,15 @@ public class Enemy : MonoBehaviour
         animator.SetTrigger("Die");
         GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
         GetComponent<Collider>().enabled = false;
+
+        // Disable AI after death
+        EnemyAI enemyAI = GetComponentInChildren<EnemyAI>();
+        if (enemyAI != null)
+        {
+            enemyAI.enabled = false;
+        }
+
         Destroy(gameObject, 5f);
     }
 }
+    

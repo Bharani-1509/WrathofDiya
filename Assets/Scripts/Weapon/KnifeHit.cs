@@ -15,9 +15,11 @@ public class KnifeHit : MonoBehaviour
         {
             Debug.Log("Hit: " + hit.collider.name);
 
-            if (hit.collider.TryGetComponent<Health>(out Health h))
+            // DAMAGE ENEMY
+            Enemy enemy = hit.collider.GetComponent<Enemy>();
+            if (enemy != null)
             {
-                h.TakeDamage(damage);
+                enemy.TakeDamage(damage);
             }
         }
     }
