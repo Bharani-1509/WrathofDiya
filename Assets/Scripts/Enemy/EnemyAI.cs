@@ -12,6 +12,7 @@ public class EnemyAI : MonoBehaviour
     private bool playerSpotted;
     private Transform root;
     private float startY;
+    public AudioClip hitSound;
 
     void Start()
     {
@@ -106,6 +107,7 @@ public class EnemyAI : MonoBehaviour
             Time.time >= nextAttackTime)
         {
             animator.SetTrigger("Attack");
+            SoundManager.Instance.PlaySFX(hitSound);
             nextAttackTime = Time.time + stats.attackCooldown;
         }
     }
