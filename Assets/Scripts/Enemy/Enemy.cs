@@ -1,15 +1,21 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
-    public int maxHealth = 100;
-    int currentHealth;
-    Animator animator;
-    bool isDead;
+    public EnemyStats stats;
+
+    private int currentHealth;
+    private Animator animator;
+    private bool isDead;
+
+    public int CurrentHealth => currentHealth;
+    public int MaxHealth => stats.maxHealth;
+    public GameObject deathVFXPrefab;
 
     void Start()
     {
-        currentHealth = maxHealth;
+        currentHealth = stats.maxHealth;
         animator = GetComponentInChildren<Animator>();
     }
 
@@ -19,10 +25,6 @@ public class Enemy : MonoBehaviour
 
         currentHealth -= damage;
         animator.SetTrigger("Hit");
-
-        Debug.Log($"[ENEMY HIT] {gameObject.name} | HP Left: {currentHealth}");
-
-        // Removed ResetAttackCooldown() call
 
         if (currentHealth <= 0)
         {
@@ -34,17 +36,21 @@ public class Enemy : MonoBehaviour
     {
         isDead = true;
         animator.SetTrigger("Die");
-        GetComponent<UnityEngine.AI.NavMeshAgent>().enabled = false;
-        GetComponent<Collider>().enabled = false;
 
-        // Disable AI after death
-        EnemyAI enemyAI = GetComponentInChildren<EnemyAI>();
-        if (enemyAI != null)
-        {
-            enemyAI.enabled = false;
-        }
+        // Spawn death particles
+        if (deathVFXPrefab != null)
+            Instantiate(deathVFXPrefab, transform.position + Vector3.up * 1f, Quaternion.identity);
 
-        Destroy(gameObject, 5f);
+        // Disable components
+        var agent = GetComponent<NavMeshAgent>();
+        if (agent != null) agent.enabled = false;
+
+        var collider = GetComponent<Collider>();
+        if (collider != null) collider.enabled = false;
+
+        var enemyAI = GetComponent<EnemyAI>();
+        if (enemyAI != null) enemyAI.enabled = false;
+
+        Destroy(gameObject, 0.5f);
     }
 }
-    
