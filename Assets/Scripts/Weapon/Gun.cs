@@ -1,4 +1,4 @@
-using Unity.Mathematics;
+﻿using Unity.Mathematics;
 using System.Collections;
 using UnityEngine;
 
@@ -85,26 +85,28 @@ public class Gun : MonoBehaviour
 
     void Shoot()
     {
-        
-    if (currentAmmo <= 0)
-        return;
+        if (currentAmmo <= 0) return;
         muzzleFlash.Play();
-
-
         currentAmmo--;
         bulletsUsed++;
-        RaycastHit hit;
 
+        RaycastHit hit;
         if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range, shootMask))
         {
             Debug.Log(hit.transform.name);
             Debug.Log("Bullets used: " + bulletsUsed);
-            Enemy target = hit.transform.GetComponentInParent<Enemy>();
 
+            Enemy target = hit.transform.GetComponentInParent<Enemy>();
             if (target != null)
             {
                 target.TakeDamage((int)damage);
             }
+
+            // ────────────────────────────────────────────────────────
+            //     ADD ONLY THIS ONE LINE (you can comment it later)
+            hit.collider?.SendMessage("OnShot", SendMessageOptions.DontRequireReceiver);
+            // ────────────────────────────────────────────────────────
+
             if (hit.rigidbody != null)
             {
                 hit.rigidbody.AddForce(-hit.normal * impactForce);
@@ -115,3 +117,4 @@ public class Gun : MonoBehaviour
         }
     }
 }
+
