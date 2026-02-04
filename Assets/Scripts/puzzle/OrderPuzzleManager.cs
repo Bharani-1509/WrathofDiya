@@ -1,73 +1,104 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
 
 public class OrderPuzzleManager : MonoBehaviour
 {
-    public int[] correctOrder;   // e.g. 1,2,3,4,5
-    private int currentIndex = 0;
+    [Header("Correct Order (orb IDs)")]
+    public int[] correctOrder;
 
+    [Header("Reward")]
     public GameObject rewardOrbPrefab;
     public Transform rewardSpawnPoint;
 
-    public float wrongFlashTime = 0.5f; // how long red shows
+    [Header("Timing")]
+    public float wrongFlashTime = 0.5f;
+
+    private int currentIndex = 0;
+    private bool puzzleSolved = false;
+    private bool resetting = false;
+
+    private PuzzleOrb[] allOrbs;
+
+    void Awake()
+    {
+        allOrbs = FindObjectsOfType<PuzzleOrb>();
+
+        foreach (PuzzleOrb orb in allOrbs)
+            orb.puzzleManager = this;
+    }
 
     public void HitOrb(PuzzleOrb orb)
     {
-        // CORRECT orb
+        if (puzzleSolved) return;
+        if (resetting) return;
+        if (orb == null) return;
+
+        if (correctOrder == null || correctOrder.Length == 0) return;
+        if (currentIndex >= correctOrder.Length) return;
+
+        // CORRECT
         if (orb.orbID == correctOrder[currentIndex])
         {
             orb.SetCorrectColor();
+            orb.Lock();
+            orb.HideOrb();
+
             currentIndex++;
 
-            // finished all?
             if (currentIndex >= correctOrder.Length)
-            {
                 PuzzleSolved();
-            }
         }
         else
         {
-            // WRONG orb
             StartCoroutine(HandleWrongOrb(orb));
         }
     }
 
     IEnumerator HandleWrongOrb(PuzzleOrb orb)
     {
-        orb.SetWrongColor();
-        Debug.Log("❌ Wrong order – flashing red");
+        resetting = true;
 
-        // Wait so player sees red
+        if (orb != null)
+            orb.SetWrongColor();
+
         yield return new WaitForSeconds(wrongFlashTime);
 
         ResetPuzzle();
-    }
 
-    void PuzzleSolved()
-    {
-        Debug.Log("✅ Puzzle Solved!");
-
-        if (rewardOrbPrefab != null && rewardSpawnPoint != null)
-        {
-            Instantiate(
-                rewardOrbPrefab,
-                rewardSpawnPoint.position,
-                rewardSpawnPoint.rotation
-            );
-        }
+        resetting = false;
     }
 
     void ResetPuzzle()
     {
-        Debug.Log("Resetting puzzle...");
-
         currentIndex = 0;
 
-        // Reset ALL orb colors
-        PuzzleOrb[] allOrbs = FindObjectsOfType<PuzzleOrb>();
-        foreach (PuzzleOrb o in allOrbs)
+        foreach (PuzzleOrb orb in allOrbs)
+            if (orb != null) orb.ResetOrb();
+    }
+
+    void PuzzleSolved()
+    {
+        puzzleSolved = true;
+        Debug.Log("✅ Puzzle Solved!");
+
+        // Disable all orbs
+        foreach (PuzzleOrb orb in allOrbs)
         {
-            o.ResetColor();
+            if (orb != null)
+            {
+                orb.DisableOrb();
+                orb.HideOrb();
+            }
+        }
+
+        // Spawn reward
+        if (rewardOrbPrefab != null && rewardSpawnPoint != null)
+        {
+            Instantiate(rewardOrbPrefab, rewardSpawnPoint.position, rewardSpawnPoint.rotation);
+        }
+        else
+        {
+            Debug.LogError("❌ Reward prefab or spawn point missing!");
         }
     }
 }
