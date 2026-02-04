@@ -1,19 +1,21 @@
 ﻿using TMPro;
 using UnityEngine;
 
-public class RewardPickupTrigger : MonoBehaviour
+public class PatternRewardPickupTrigger : MonoBehaviour
 {
-    [Header("UI")]
+    [Header("UI (Scene TMP object name)")]
     public string pickupTextObjectName = "PickupText";
 
-    private TMP_Text pickupText;
+    [Header("Pickup Key")]
+    public KeyCode pickupKey = KeyCode.E;
 
+    private TMP_Text pickupText;
     private bool playerInside = false;
     private bool collected = false;
 
     void Awake()
     {
-        // Make sure reward ALWAYS has a Rigidbody (required for triggers)
+        // Ensure Rigidbody exists (trigger needs it)
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb == null)
             rb = gameObject.AddComponent<Rigidbody>();
@@ -21,11 +23,10 @@ public class RewardPickupTrigger : MonoBehaviour
         rb.isKinematic = true;
         rb.useGravity = false;
 
-        // Make sure reward has at least one collider set to trigger
+        // Ensure collider exists and is trigger
         Collider col = GetComponent<Collider>();
         if (col == null)
         {
-            // If no collider exists, add sphere trigger automatically
             SphereCollider sc = gameObject.AddComponent<SphereCollider>();
             sc.isTrigger = true;
             sc.radius = 1.5f;
@@ -38,32 +39,36 @@ public class RewardPickupTrigger : MonoBehaviour
 
     void Start()
     {
+        // Auto-find TMP text in scene (works with spawned prefab)
         GameObject t = GameObject.Find(pickupTextObjectName);
+
         if (t != null)
             pickupText = t.GetComponent<TMP_Text>();
 
         if (pickupText == null)
-            Debug.LogError($"❌ TMP text not found. Create TMP text named: {pickupTextObjectName}");
+        {
+            Debug.LogError($"❌ TMP Text not found. Create TMP text named: {pickupTextObjectName}");
+            return;
+        }
 
-        if (pickupText != null)
-            pickupText.gameObject.SetActive(false);
+        pickupText.gameObject.SetActive(false);
     }
 
     void Update()
     {
         if (collected) return;
 
-        if (playerInside && Input.GetKeyDown(KeyCode.E))
+        if (playerInside && Input.GetKeyDown(pickupKey))
         {
-            Collect();
+            CollectReward();
         }
     }
 
-    void Collect()
+    void CollectReward()
     {
         collected = true;
 
-        Debug.Log("🎁 Reward Collected!");
+        Debug.Log("🎁 Pattern Puzzle Reward Collected!");
 
         if (pickupText != null)
             pickupText.gameObject.SetActive(false);
@@ -82,21 +87,7 @@ public class RewardPickupTrigger : MonoBehaviour
             if (pickupText != null)
                 pickupText.gameObject.SetActive(true);
 
-            Debug.Log("✅ Player entered reward trigger");
-        }
-    }
-
-    void OnTriggerStay(Collider other)
-    {
-        if (collected) return;
-
-        // Extra safe: if trigger enter failed for some reason
-        if (other.CompareTag("Player"))
-        {
-            playerInside = true;
-
-            if (pickupText != null && !pickupText.gameObject.activeSelf)
-                pickupText.gameObject.SetActive(true);
+            Debug.Log("✅ Player entered Pattern Reward trigger");
         }
     }
 
@@ -111,7 +102,7 @@ public class RewardPickupTrigger : MonoBehaviour
             if (pickupText != null)
                 pickupText.gameObject.SetActive(false);
 
-            Debug.Log("⬅ Player left reward trigger");
+            Debug.Log("⬅ Player left Pattern Reward trigger");
         }
     }
 }
