@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using TMPro;
 
 public class Gun : MonoBehaviour
 {
@@ -21,6 +22,9 @@ public class Gun : MonoBehaviour
     public Animator animator;
     public Camera fpsCam;
 
+    [Header("Ammo UI")]
+    public TextMeshProUGUI ammoText;
+
     private float nextTimeToFire = 0f;
     private LayerMask shootMask;
 
@@ -28,12 +32,14 @@ public class Gun : MonoBehaviour
     {
         currentAmmo = maxAmmo;
         shootMask = ~LayerMask.GetMask("Player", "Weapon");
+        UpdateAmmoUI();
     }
 
     void OnEnable()
     {
         isReloading = false;
         if (animator != null) animator.SetBool("Reloading", false);
+        UpdateAmmoUI();
     }
 
     void Update()
@@ -69,42 +75,42 @@ public class Gun : MonoBehaviour
 
         if (animator != null) animator.SetBool("Reloading", false);
         isReloading = false;
+
+        UpdateAmmoUI();
     }
 
     void Shoot()
     {
         currentAmmo--;
+        UpdateAmmoUI();
 
         if (muzzleFlash != null) muzzleFlash.Play();
 
         RaycastHit hit;
         if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range, shootMask))
         {
-            // Apply damage to enemy (your original logic)
             Enemy enemy = hit.transform.GetComponentInParent<Enemy>();
             if (enemy != null)
-            {
                 enemy.TakeDamage((int)damage);
-            }
 
-            // Apply force if rigidbody
             if (hit.rigidbody != null)
-            {
                 hit.rigidbody.AddForce(-hit.normal * impactForce);
-            }
 
-            // Spawn impact effect
             if (impactEffect != null)
             {
                 GameObject impact = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
                 Destroy(impact, 1f);
             }
 
-            // ────────────────────────────────────────────────
-            // THIS IS THE MISSING LINK: Notify puzzle nodes (or any receiver)
-            // Sends "OnShot" to any script on the hit GameObject or its children/parents
             hit.collider.SendMessage("OnShot", SendMessageOptions.DontRequireReceiver);
-            // ────────────────────────────────────────────────
         }
+    }
+
+    void UpdateAmmoUI()
+    {
+        if (ammoText == null) return;
+
+        // EXACT NUMBERS ONLY
+        ammoText.text = currentAmmo + " | " + ammoReserve;
     }
 }
