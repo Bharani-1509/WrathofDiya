@@ -8,25 +8,13 @@ public class AmmoPickup : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
 
-        Gun gun = other.GetComponentInChildren<Gun>();
-
-        if (gun == null)
+        if (Gun.ActiveGun == null)
         {
-            Debug.Log("No Gun found on player");
+            Debug.LogError("AmmoPickup: No ActiveGun found!");
             return;
         }
-        if (gun.ammoReserve >= gun.maxAmmoReserve)
-        {
-            Debug.Log("Ammo already full. Pickup blocked.");
-            return;
-        }
-            
 
-        int spaceLeft = gun.maxAmmoReserve - gun.ammoReserve;
-        int ammoToGive = Mathf.Min(spaceLeft, ammoAmount);
-
-        gun.ammoReserve += ammoToGive;
-
+        Gun.ActiveGun.AddAmmo(ammoAmount);
         Destroy(gameObject);
     }
 }
