@@ -1,6 +1,5 @@
-﻿using Unity.Mathematics;
+﻿using UnityEngine;
 using System.Collections;
-using UnityEngine;
 
 public class Gun : MonoBehaviour
 {
@@ -9,29 +8,21 @@ public class Gun : MonoBehaviour
     public float impactForce = 30f;
     public float fireRate = 15f;
 
-
-
-    public int bulletsUsed = 0;
     public int maxAmmo = 10;
     public int ammoReserve = 30;
     public int maxAmmoReserve = 90;
     private int currentAmmo;
+
     public float reloadTime = 1f;
     private bool isReloading = false;
 
-
-
-    LayerMask shootMask;
     public ParticleSystem muzzleFlash;
     public GameObject impactEffect;
-    private float nextTimeToFire = 0f;
-
-
     public Animator animator;
-
-
     public Camera fpsCam;
 
+    private float nextTimeToFire = 0f;
+    private LayerMask shootMask;
 
     void Start()
     {
@@ -42,19 +33,19 @@ public class Gun : MonoBehaviour
     void OnEnable()
     {
         isReloading = false;
-        animator.SetBool("Reloading", false);
+        if (animator != null) animator.SetBool("Reloading", false);
     }
-
 
     void Update()
     {
-        if (isReloading)
-            return;
+        if (isReloading) return;
+
         if (currentAmmo <= 0 && ammoReserve > 0)
         {
             StartCoroutine(Reload());
             return;
         }
+
         if (Input.GetMouseButton(0) && Time.time >= nextTimeToFire && currentAmmo > 0)
         {
             nextTimeToFire = Time.time + 1f / fireRate;
@@ -64,57 +55,56 @@ public class Gun : MonoBehaviour
 
     IEnumerator Reload()
     {
-        if (ammoReserve <= 0)
-            yield break;
+        if (ammoReserve <= 0) yield break;
 
         isReloading = true;
-        animator.SetBool("Reloading", true);
+        if (animator != null) animator.SetBool("Reloading", true);
 
         yield return new WaitForSeconds(reloadTime);
 
-        int bulletsNeeded = maxAmmo - currentAmmo;
-        int bulletsToLoad = Mathf.Min(bulletsNeeded, ammoReserve);
+        int needed = maxAmmo - currentAmmo;
+        int take = Mathf.Min(needed, ammoReserve);
+        currentAmmo += take;
+        ammoReserve -= take;
 
-        currentAmmo += bulletsToLoad;
-        ammoReserve -= bulletsToLoad;
-
-        animator.SetBool("Reloading", false);
+        if (animator != null) animator.SetBool("Reloading", false);
         isReloading = false;
     }
 
-
     void Shoot()
     {
-        if (currentAmmo <= 0) return;
-        muzzleFlash.Play();
         currentAmmo--;
-        bulletsUsed++;
+
+        if (muzzleFlash != null) muzzleFlash.Play();
 
         RaycastHit hit;
         if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range, shootMask))
         {
-            Debug.Log(hit.transform.name);
-            Debug.Log("Bullets used: " + bulletsUsed);
-
-            Enemy target = hit.transform.GetComponentInParent<Enemy>();
-            if (target != null)
+            // Apply damage to enemy (your original logic)
+            Enemy enemy = hit.transform.GetComponentInParent<Enemy>();
+            if (enemy != null)
             {
-                target.TakeDamage((int)damage);
+                enemy.TakeDamage((int)damage);
             }
 
-            // ────────────────────────────────────────────────────────
-            //     ADD ONLY THIS ONE LINE (you can comment it later)
-            hit.collider?.SendMessage("OnShot", SendMessageOptions.DontRequireReceiver);
-            // ────────────────────────────────────────────────────────
-
+            // Apply force if rigidbody
             if (hit.rigidbody != null)
             {
                 hit.rigidbody.AddForce(-hit.normal * impactForce);
             }
 
-            GameObject ImpactGO = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
-            Destroy(ImpactGO, 1f);
+            // Spawn impact effect
+            if (impactEffect != null)
+            {
+                GameObject impact = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(impact, 1f);
+            }
+
+            // ────────────────────────────────────────────────
+            // THIS IS THE MISSING LINK: Notify puzzle nodes (or any receiver)
+            // Sends "OnShot" to any script on the hit GameObject or its children/parents
+            hit.collider.SendMessage("OnShot", SendMessageOptions.DontRequireReceiver);
+            // ────────────────────────────────────────────────
         }
     }
 }
-
