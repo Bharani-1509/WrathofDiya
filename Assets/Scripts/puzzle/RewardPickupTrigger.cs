@@ -1,34 +1,27 @@
-﻿using TMPro;
-using UnityEngine;
+﻿using UnityEngine;
+using TMPro;
 
 public class RewardPickupTrigger : MonoBehaviour
 {
-    [Header("UI")]
-    public string pickupTextObjectName = "PickupText";
+    [Header("Healing")]
+    [SerializeField] private int healAmount = 25;
 
-    private TMP_Text pickupText;
+    [Header("UI Prompt")]
+    [SerializeField] private TMP_Text pickupPromptText;   // ← Drag your "Press E" text here!
 
     private bool playerInside = false;
-    private bool collected = false;
+    private PlayerHealth playerHealthRef;
+    private bool hasBeenCollected = false;
 
     void Awake()
     {
-        // Make sure reward ALWAYS has a Rigidbody (required for triggers)
-        Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb == null)
-            rb = gameObject.AddComponent<Rigidbody>();
-
-        rb.isKinematic = true;
-        rb.useGravity = false;
-
-        // Make sure reward has at least one collider set to trigger
+        // Ensure we have a trigger collider
         Collider col = GetComponent<Collider>();
         if (col == null)
         {
-            // If no collider exists, add sphere trigger automatically
-            SphereCollider sc = gameObject.AddComponent<SphereCollider>();
-            sc.isTrigger = true;
-            sc.radius = 1.5f;
+            SphereCollider sphere = gameObject.AddComponent<SphereCollider>();
+            sphere.isTrigger = true;
+            sphere.radius = 1.8f;   // adjust to your pickup size
         }
         else
         {
@@ -38,80 +31,59 @@ public class RewardPickupTrigger : MonoBehaviour
 
     void Start()
     {
-        GameObject t = GameObject.Find(pickupTextObjectName);
-        if (t != null)
-            pickupText = t.GetComponent<TMP_Text>();
-
-        if (pickupText == null)
-            Debug.LogError($"❌ TMP text not found. Create TMP text named: {pickupTextObjectName}");
-
-        if (pickupText != null)
-            pickupText.gameObject.SetActive(false);
+        if (pickupPromptText != null)
+        {
+            pickupPromptText.gameObject.SetActive(false);
+        }
+        else
+        {
+            Debug.LogWarning($"PickupPromptText is not assigned on {gameObject.name}");
+        }
     }
 
     void Update()
     {
-        if (collected) return;
+        if (!playerInside || hasBeenCollected) return;
 
-        if (playerInside && Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E))
         {
-            Collect();
+            if (playerHealthRef != null)
+            {
+                playerHealthRef.Heal(healAmount);
+            }
+
+            hasBeenCollected = true;
+
+            if (pickupPromptText != null)
+                pickupPromptText.gameObject.SetActive(false);
+
+            Destroy(gameObject);
         }
-    }
-
-    void Collect()
-    {
-        collected = true;
-
-        Debug.Log("🎁 Reward Collected!");
-
-        if (pickupText != null)
-            pickupText.gameObject.SetActive(false);
-
-        Destroy(gameObject);
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (collected) return;
+        if (hasBeenCollected) return;
 
         if (other.CompareTag("Player"))
         {
             playerInside = true;
+            playerHealthRef = other.GetComponent<PlayerHealth>();
 
-            if (pickupText != null)
-                pickupText.gameObject.SetActive(true);
-
-            Debug.Log("✅ Player entered reward trigger");
-        }
-    }
-
-    void OnTriggerStay(Collider other)
-    {
-        if (collected) return;
-
-        // Extra safe: if trigger enter failed for some reason
-        if (other.CompareTag("Player"))
-        {
-            playerInside = true;
-
-            if (pickupText != null && !pickupText.gameObject.activeSelf)
-                pickupText.gameObject.SetActive(true);
+            if (pickupPromptText != null)
+                pickupPromptText.gameObject.SetActive(true);
         }
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (collected) return;
-
         if (other.CompareTag("Player"))
         {
             playerInside = false;
+            playerHealthRef = null;
 
-            if (pickupText != null)
-                pickupText.gameObject.SetActive(false);
-
-            Debug.Log("⬅ Player left reward trigger");
+            if (pickupPromptText != null)
+                pickupPromptText.gameObject.SetActive(false);
         }
     }
 }

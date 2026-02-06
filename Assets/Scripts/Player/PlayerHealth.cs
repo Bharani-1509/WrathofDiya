@@ -4,143 +4,136 @@ using TMPro;
 
 public class PlayerHealth : MonoBehaviour
 {
-    [Header("Health Settings")]
+    [Header("Health")]
     public int maxHealth = 100;
     public int currentHealth;
+
+    [Header("UI")]
+    public Image healthBarFill;
+    public TextMeshProUGUI healthText;
+
+    [Header("Animation")]
+    public float barSpeed = 5f;
+    private float displayPercent; // 0–1 value
+
     private bool isDead;
 
-    [Header("UI - Image Fill Style")]
-    public Image healthBarFill;           // Drag the FILL Image (Image.Type = Filled)
-    public TextMeshProUGUI healthText;    // Optional numbers display
+    [Header("Respawn")]
+    public Transform spawnPoint;
+    public float respawnDelay = 2f;
 
-    [Header("Respawn Settings")]
-    public Transform spawnPoint;          // ← Drag your SpawnPoint GameObject here
-    public float respawnDelay = 2f;       // Time before respawn (seconds)
-
-    private Vector3 initialPosition;      // Fallback if no spawn point assigned
-    private Quaternion initialRotation;
+    private PlayerMovement movement;
+    private CharacterController characterController;
+    private Rigidbody rb;
 
     void Awake()
     {
-        // Remember starting position/rotation as fallback
-        initialPosition = transform.position;
-        initialRotation = transform.rotation;
+        movement = GetComponent<PlayerMovement>();
+        characterController = GetComponent<CharacterController>();
+        rb = GetComponent<Rigidbody>();
     }
 
     void Start()
     {
         currentHealth = maxHealth;
-
-        // Setup fill image properties once
-        if (healthBarFill != null)
-        {
-            healthBarFill.type = Image.Type.Filled;
-            healthBarFill.fillMethod = Image.FillMethod.Horizontal;
-            healthBarFill.fillOrigin = (int)Image.OriginHorizontal.Left;
-            healthBarFill.fillAmount = 1f;
-        }
-
-        UpdateHealthBar();
+        displayPercent = 1f;
+        SetupBar();
+        UpdateText();
     }
 
-    public void TakeDamage(int damage)
-    {
-        if (isDead) return;
-
-        currentHealth -= damage;
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
-
-        UpdateHealthBar();
-
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
-    }
-
-    private void UpdateHealthBar()
+    void Update()
     {
         if (healthBarFill == null) return;
 
-        float percent = (float)currentHealth / maxHealth;
-        healthBarFill.fillAmount = percent;
+        float targetPercent = (float)currentHealth / maxHealth;
+        displayPercent = Mathf.MoveTowards(
+            displayPercent,
+            targetPercent,
+            barSpeed * Time.deltaTime
+        );
 
-        // Color transition
-        if (percent > 0.6f)
-            healthBarFill.color = new Color(0.2f, 0.8f, 0.2f);      // green
-        else if (percent > 0.3f)
-            healthBarFill.color = new Color(1f, 0.8f, 0.1f);        // yellow
-        else
-            healthBarFill.color = new Color(0.9f, 0.15f, 0.15f);    // red
-
-        if (healthText != null)
-        {
-            healthText.text = $"{currentHealth} / {maxHealth}";
-        }
+        healthBarFill.fillAmount = displayPercent;
     }
 
-    private void Die()
+    void SetupBar()
+    {
+        if (healthBarFill == null) return;
+
+        healthBarFill.type = Image.Type.Filled;
+        healthBarFill.fillMethod = Image.FillMethod.Horizontal;
+        healthBarFill.fillOrigin = (int)Image.OriginHorizontal.Left;
+        healthBarFill.fillAmount = 1f;
+    }
+
+    // ================= DAMAGE =================
+    public void TakeDamage(int dmg)
+    {
+        if (isDead) return;
+
+        currentHealth -= dmg;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        UpdateText();
+
+        if (currentHealth <= 0)
+            Die();
+    }
+
+    // ================= HEAL =================
+    public void Heal(int amount)
+    {
+        if (isDead) return;
+
+        currentHealth += amount;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+
+        // FIXED: Force bar to immediately move UP (snap or faster catch-up)
+        float targetPercent = (float)currentHealth / maxHealth;
+        displayPercent = Mathf.Max(displayPercent, targetPercent);
+
+        UpdateText();
+    }
+
+    void UpdateText()
+    {
+        if (healthText != null)
+            healthText.text = $"{currentHealth} / {maxHealth}";
+    }
+
+    // ================= DEATH =================
+    void Die()
     {
         isDead = true;
-        Debug.Log("PLAYER DEAD → respawning in " + respawnDelay + " seconds");
 
-        // Disable movement
-        var movement = GetComponent<PlayerMovement>();
         if (movement != null)
-        {
             movement.enabled = false;
-        }
 
-        // Visual feedback: empty bar
-        if (healthBarFill != null)
-        {
-            healthBarFill.fillAmount = 0f;
-        }
-
-        // Schedule respawn
         Invoke(nameof(Respawn), respawnDelay);
     }
 
-    private void Respawn()
+    void Respawn()
     {
-        Debug.Log("Respawn() executed");
+        if (characterController != null)
+            characterController.enabled = false;
 
-        // Reset health & state
-        currentHealth = maxHealth;
-        isDead = false;
-        UpdateHealthBar();
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
 
-        // Move to spawn point (with fallback)
         if (spawnPoint != null)
-        {
             transform.position = spawnPoint.position;
-            transform.rotation = spawnPoint.rotation;
-            Debug.Log($"Respawned at spawn point: {spawnPoint.position}");
-        }
-        else
-        {
-            // Fallback to initial position
-            transform.position = initialPosition;
-            transform.rotation = initialRotation;
-            Debug.LogWarning("No spawn point assigned → respawned at initial position");
-        }
 
-        // Re-enable movement
-        var movement = GetComponent<PlayerMovement>();
+        currentHealth = maxHealth;
+        displayPercent = 1f;
+        isDead = false;
+
+        UpdateText();
+
+        if (characterController != null)
+            characterController.enabled = true;
+
         if (movement != null)
-        {
             movement.enabled = true;
-            Debug.Log("Player movement re-enabled");
-        }
-    }
-
-    // Optional: public method to change spawn point (for checkpoints later)
-    public void SetSpawnPoint(Transform newSpawn)
-    {
-        if (newSpawn != null)
-        {
-            spawnPoint = newSpawn;
-            Debug.Log("Spawn point updated to: " + newSpawn.position);
-        }
     }
 }
